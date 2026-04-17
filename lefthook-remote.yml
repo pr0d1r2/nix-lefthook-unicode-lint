@@ -1,0 +1,12 @@
+---
+pre-commit:
+  commands:
+    unicode-lint:
+      glob: "*"
+      run: timeout ${LEFTHOOK_UNICODE_LINT_TIMEOUT:-30} lefthook-unicode-lint {staged_files}
+
+pre-push:
+  commands:
+    unicode-lint:
+      glob: "*"
+      run: timeout ${LEFTHOOK_UNICODE_LINT_TIMEOUT:-30} lefthook-unicode-lint {push_files}

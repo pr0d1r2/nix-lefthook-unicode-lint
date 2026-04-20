@@ -23,6 +23,10 @@
       url = "github:pr0d1r2/nix-lefthook-trailing-whitespace";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-lefthook-taplo = {
+      url = "github:pr0d1r2/nix-lefthook-taplo";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -34,6 +38,7 @@
       nix-lefthook-missing-final-newline,
       nix-lefthook-nix-no-embedded-shell,
       nix-lefthook-trailing-whitespace,
+      nix-lefthook-taplo,
     }:
     let
       supportedSystems = [
@@ -77,6 +82,7 @@
               nix-lefthook-missing-final-newline.packages.${pkgs.stdenv.hostPlatform.system}.default
               nix-lefthook-nix-no-embedded-shell.packages.${pkgs.stdenv.hostPlatform.system}.default
               nix-lefthook-trailing-whitespace.packages.${pkgs.stdenv.hostPlatform.system}.default
+              nix-lefthook-taplo.packages.${pkgs.stdenv.hostPlatform.system}.default
               batsWithLibs
               pkgs.coreutils
               pkgs.deadnix

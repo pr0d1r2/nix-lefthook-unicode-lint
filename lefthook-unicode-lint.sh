@@ -14,7 +14,7 @@ failed=0
 for f in "$@"; do
     [ -f "$f" ] || continue
 
-    if LC_ALL=C grep -Plq '\x00' "$f" 2>/dev/null; then
+    if LC_ALL=C grep -Palq '\x00' "$f" 2>/dev/null; then
         continue
     fi
 

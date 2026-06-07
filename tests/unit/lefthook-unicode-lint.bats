@@ -48,6 +48,14 @@ setup() {
     assert_success
 }
 
+@test "large binary file is skipped" {
+    # Reproduce GNU grep 3.12 regression: grep -Plq '\x00' silently
+    # misses null bytes in larger binary files unless -a is used.
+    dd if=/dev/urandom of="$TMP/image.gif" bs=1024 count=100 2>/dev/null
+    run lefthook-unicode-lint "$TMP/image.gif"
+    assert_success
+}
+
 @test "multiple files: one bad fails the run" {
     echo "clean" > "$TMP/good.txt"
     printf 'hello \xef\xbf\xbd world\n' > "$TMP/bad.txt"

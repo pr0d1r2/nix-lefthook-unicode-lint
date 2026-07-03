@@ -19,3 +19,8 @@ setup() {
     run grep -F 'watch_file dev.sh' .envrc
     assert_success
 }
+
+@test ".envrc watches lefthook-unicode-lint.sh for changes" {
+    run grep -F 'watch_file lefthook-unicode-lint.sh' .envrc
+    assert_success
+}

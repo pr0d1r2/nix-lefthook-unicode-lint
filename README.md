@@ -57,6 +57,28 @@ The default timeout is 30 seconds. Override per-repo via environment variable:
 export LEFTHOOK_UNICODE_LINT_TIMEOUT=60
 ```
 
+## Consensus algorithm
+
+The linter uses three independent methods to detect invalid UTF-8:
+
+1. **iconv** -- attempts `iconv -f UTF-8 -t UTF-8` conversion
+2. **Python 3** -- decodes the file with `open(...).read().decode('utf-8')`
+3. **Perl** -- decodes with `Encode::decode("UTF-8", ..., FB_CROAK)`
+
+A file is flagged only when at least 2-of-3 methods agree it contains invalid bytes. This consensus approach prevents false positives from a single tool's quirks.
+
+### Degradation when methods are missing
+
+Python 3 and Perl are checked at runtime (`command -v`). If either is absent, fewer methods vote:
+
+| Available methods | Effective threshold | Effect |
+|---|---|---|
+| All three (iconv + Python + Perl) | 2-of-3 | Full consensus; tolerates one false positive |
+| Two (one of Python/Perl missing) | 2-of-2 | Both remaining methods must agree; no false-positive tolerance |
+| One (both Python and Perl missing) | Unreachable | Only iconv votes; threshold of 2 can never be met -- silent false negatives |
+
+The Nix flake package guarantees all three methods via `runtimeInputs` (gnugrep, libiconv, python3, perl). Degradation only affects raw script consumers outside Nix who lack python3 and/or perl on `PATH`.
+
 ## Development
 
 The repo includes an `.envrc` for [direnv](https://direnv.net/) — entering the directory automatically loads the devShell with all dependencies:

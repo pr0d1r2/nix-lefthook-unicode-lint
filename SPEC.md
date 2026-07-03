@@ -42,7 +42,7 @@ Nix-flake-packaged lefthook-compatible Unicode lint checker that detects invalid
 | `x` | T5 | Add bats test for empty files |
 | `x` | T6 | Add watch_file entries to .envrc for flake.nix/dev.sh |
 | `x` | T7 | Add bats test for multi-byte UTF-8 (CJK, emoji) |
-| `.` | T8 | Document consensus algorithm degradation in README |
+| `x` | T8 | Document consensus algorithm degradation in README |
 
 ## §B — Bugs / Known Issues
 

@@ -35,7 +35,7 @@ Nix-flake-packaged lefthook-compatible Unicode lint checker that detects invalid
 
 | status | id | goal |
 |---|---|---|
-| `.` | T1 | Fix python3 injection: `open('$f','rb')` breaks on `'` in names |
+| `x` | T1 | Fix python3 injection: `open('$f','rb')` breaks on `'` in names |
 | `.` | T2 | Add binary exclude pattern to local lefthook.yml |
 | `.` | T3 | Add bats test for special characters in filenames |
 | `.` | T4 | Add bats test for invalid UTF-8 consensus path |

@@ -135,6 +135,12 @@ setup() {
     assert_output --partial "/3 methods agree"
 }
 
+@test "empty file passes" {
+    touch "$TMP/empty.txt"
+    run lefthook-unicode-lint "$TMP/empty.txt"
+    assert_success
+}
+
 @test "multiple files: one bad fails the run" {
     echo "clean" > "$TMP/good.txt"
     printf 'hello \xef\xbf\xbd world\n' > "$TMP/bad.txt"

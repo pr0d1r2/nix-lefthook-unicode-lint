@@ -147,3 +147,35 @@ setup() {
     run lefthook-unicode-lint "$TMP/good.txt" "$TMP/bad.txt"
     assert_failure
 }
+
+@test "CJK characters pass" {
+    printf '%s\n' '漢字テスト한국어' > "$TMP/cjk.txt"
+    run lefthook-unicode-lint "$TMP/cjk.txt"
+    assert_success
+}
+
+@test "emoji characters pass" {
+    printf '%s\n' '🎉🚀💯🌍' > "$TMP/emoji.txt"
+    run lefthook-unicode-lint "$TMP/emoji.txt"
+    assert_success
+}
+
+@test "mixed CJK and emoji with ASCII passes" {
+    printf '%s\n' 'Hello 世界 🚀 東京' > "$TMP/mix.txt"
+    run lefthook-unicode-lint "$TMP/mix.txt"
+    assert_success
+}
+
+@test "CJK with U+FFFD fails" {
+    printf '漢字\xef\xbf\xbd测试\n' > "$TMP/cf.txt"
+    run lefthook-unicode-lint "$TMP/cf.txt"
+    assert_failure
+    assert_output --partial "U+FFFD"
+}
+
+@test "emoji with invalid UTF-8 fails" {
+    printf '🎉\xff\xfe🚀\n' > "$TMP/eb.txt"
+    run lefthook-unicode-lint "$TMP/eb.txt"
+    assert_failure
+    assert_output --partial "invalid UTF-8"
+}

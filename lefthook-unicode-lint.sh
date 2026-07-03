@@ -25,7 +25,7 @@ for f in "$@"; do
   fi
 
   if command -v python3 >/dev/null 2>&1; then
-    if ! python3 -c "open('$f','rb').read().decode('utf-8')" 2>/dev/null; then
+    if ! python3 -c "import sys; open(sys.argv[1],'rb').read().decode('utf-8')" "$f" 2>/dev/null; then
       votes=$((votes + 1))
     fi
   fi

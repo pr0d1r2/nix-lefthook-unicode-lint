@@ -62,6 +62,56 @@ setup() {
     assert_success
 }
 
+@test "filename with space passes" {
+    echo "hello world" > "$TMP/file name.txt"
+    run lefthook-unicode-lint "$TMP/file name.txt"
+    assert_success
+}
+
+@test "filename with double quote passes" {
+    echo "hello world" > "$TMP/file\"name.txt"
+    run lefthook-unicode-lint "$TMP/file\"name.txt"
+    assert_success
+}
+
+@test "filename with dollar sign passes" {
+    echo "hello world" > "$TMP/file\$name.txt"
+    run lefthook-unicode-lint "$TMP/file\$name.txt"
+    assert_success
+}
+
+@test "filename with backtick passes" {
+    echo "hello world" > "$TMP/file\`name.txt"
+    run lefthook-unicode-lint "$TMP/file\`name.txt"
+    assert_success
+}
+
+@test "filename with parentheses passes" {
+    echo "hello world" > "$TMP/file(name).txt"
+    run lefthook-unicode-lint "$TMP/file(name).txt"
+    assert_success
+}
+
+@test "filename with semicolons and ampersands passes" {
+    echo "hello world" > "$TMP/file;name&here.txt"
+    run lefthook-unicode-lint "$TMP/file;name&here.txt"
+    assert_success
+}
+
+@test "filename with special characters and invalid UTF-8 fails" {
+    printf '\xff\xfe invalid' > "$TMP/it's a \$pecial file.txt"
+    run lefthook-unicode-lint "$TMP/it's a \$pecial file.txt"
+    assert_failure
+    assert_output --partial "invalid UTF-8"
+}
+
+@test "filename with special characters and U+FFFD fails" {
+    printf 'hello \xef\xbf\xbd world\n' > "$TMP/file\"with'special.txt"
+    run lefthook-unicode-lint "$TMP/file\"with'special.txt"
+    assert_failure
+    assert_output --partial "U+FFFD"
+}
+
 @test "invalid UTF-8 detected by consensus" {
     printf '\xff\xfe invalid' > "$TMP/bad_utf8.txt"
     run lefthook-unicode-lint "$TMP/bad_utf8.txt"

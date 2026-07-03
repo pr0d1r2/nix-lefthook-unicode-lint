@@ -37,7 +37,7 @@ Nix-flake-packaged lefthook-compatible Unicode lint checker that detects invalid
 |---|---|---|
 | `x` | T1 | Fix python3 injection: `open('$f','rb')` breaks on `'` in names |
 | `x` | T2 | Add binary exclude pattern to local lefthook.yml |
-| `.` | T3 | Add bats test for special characters in filenames |
+| `x` | T3 | Add bats test for special characters in filenames |
 | `.` | T4 | Add bats test for invalid UTF-8 consensus path |
 | `.` | T5 | Add bats test for empty files |
 | `.` | T6 | Add watch_file entries to .envrc for flake.nix/dev.sh |

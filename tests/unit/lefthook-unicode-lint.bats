@@ -119,6 +119,22 @@ setup() {
     assert_output --partial "invalid UTF-8"
 }
 
+@test "consensus vote format" {
+    printf '\xff\xfe' > "$TMP/v.txt"
+    run lefthook-unicode-lint "$TMP/v.txt"
+    assert_failure
+    assert_output --partial "unicode-lint:"
+    assert_output --partial "v.txt"
+    assert_output --partial "/3 methods agree"
+}
+
+@test "0x80 byte consensus" {
+    printf '\x80\n' > "$TMP/c.txt"
+    run lefthook-unicode-lint "$TMP/c.txt"
+    assert_failure
+    assert_output --partial "/3 methods agree"
+}
+
 @test "multiple files: one bad fails the run" {
     echo "clean" > "$TMP/good.txt"
     printf 'hello \xef\xbf\xbd world\n' > "$TMP/bad.txt"

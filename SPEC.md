@@ -46,7 +46,5 @@ Nix-flake-packaged lefthook-compatible Unicode lint checker that detects invalid
 
 ## §B — Bugs / Known Issues
 
-1. **Python3 filename injection** (line 28): `open('$f','rb')` — single quotes in filenames cause a syntax error, producing a false "invalid" vote. Fix: use `sys.argv[1]`.
-2. **Silent false negatives**: If python3 and perl are both absent, only iconv votes; consensus threshold (2) can never be reached. The Nix wrapper guarantees deps, but raw script consumers may lack them.
-3. **Local/remote exclude mismatch**: lefthook-remote.yml excludes binary extensions; local lefthook.yml does not.
-4. **grep -P portability**: PCRE mode requires GNU grep. Nix provides it, but raw script use on stock macOS fails.
+1. **Silent false negatives**: If python3 and perl are both absent, only iconv votes; consensus threshold (2) can never be reached. The Nix wrapper guarantees deps, but raw script consumers may lack them.
+2. **grep -P portability**: PCRE mode requires GNU grep. Nix provides it, but raw script use on stock macOS fails.

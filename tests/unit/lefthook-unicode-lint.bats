@@ -56,6 +56,19 @@ setup() {
     assert_success
 }
 
+@test "filename with single quote passes" {
+    echo "hello world" > "$TMP/it's_fine.txt"
+    run lefthook-unicode-lint "$TMP/it's_fine.txt"
+    assert_success
+}
+
+@test "invalid UTF-8 detected by consensus" {
+    printf '\xff\xfe invalid' > "$TMP/bad_utf8.txt"
+    run lefthook-unicode-lint "$TMP/bad_utf8.txt"
+    assert_failure
+    assert_output --partial "invalid UTF-8"
+}
+
 @test "multiple files: one bad fails the run" {
     echo "clean" > "$TMP/good.txt"
     printf 'hello \xef\xbf\xbd world\n' > "$TMP/bad.txt"

@@ -6,17 +6,17 @@ setup() {
 }
 
 @test "pre-commit unicode-lint has binary exclude pattern" {
-    run bash -c "sed -n '/^pre-commit:/,/^pre-push:/p' lefthook.yml | grep 'exclude:'"
+    run bash -c "sed -n '/^pre-commit:/,/^pre-push:/p' lefthook.yml | sed -n '/^    unicode-lint:/,/^    markdownlint:/p' | grep 'exclude:'"
     assert_success
 }
 
 @test "pre-push unicode-lint has binary exclude pattern" {
-    run bash -c "sed -n '/^pre-push:/,\$p' lefthook.yml | grep 'exclude:'"
+    run bash -c "sed -n '/^pre-push:/,\$p' lefthook.yml | sed -n '/^    unicode-lint:/,/^    markdownlint:/p' | grep 'exclude:'"
     assert_success
 }
 
 @test "local exclude pattern matches remote exclude pattern" {
-    local_excludes=$(grep 'exclude:' lefthook.yml | sed "s/.*exclude: //" | sort -u)
+    local_excludes=$(sed -n '/^    unicode-lint:/,/^    markdownlint:/p' lefthook.yml | grep 'exclude:' | sed "s/.*exclude: //" | sort -u)
     remote_excludes=$(grep 'exclude:' lefthook-remote.yml | sed "s/.*exclude: //" | sort -u)
     [ "$local_excludes" = "$remote_excludes" ]
 }

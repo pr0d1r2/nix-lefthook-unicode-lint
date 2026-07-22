@@ -41,6 +41,14 @@
       url = "github:pr0d1r2/nix-lefthook-missing-final-newline";
       flake = false;
     };
+    nix-lefthook-markdownlint-src = {
+      url = "github:pr0d1r2/nix-lefthook-markdownlint";
+      flake = false;
+    };
+    nix-lefthook-markdownlint-agentic-src = {
+      url = "github:pr0d1r2/nix-lefthook-markdownlint-agentic";
+      flake = false;
+    };
     nix-lefthook-nix-no-embedded-shell-src = {
       url = "github:pr0d1r2/nix-lefthook-nix-no-embedded-shell";
       flake = false;
@@ -91,6 +99,8 @@
       nix-lefthook-git-conflict-markers-src,
       nix-lefthook-git-no-local-paths-src,
       nix-lefthook-missing-final-newline-src,
+      nix-lefthook-markdownlint-src,
+      nix-lefthook-markdownlint-agentic-src,
       nix-lefthook-nix-no-embedded-shell-src,
       nix-lefthook-nixfmt-src,
       nix-lefthook-shellcheck-src,
@@ -124,6 +134,10 @@
               }
               // extra
             );
+          isMarkdownAgentic = pkgs.writeShellApplication {
+            name = "is-markdown-agentic";
+            text = builtins.readFile "${nix-lefthook-markdownlint-src}/is-markdown-agentic.sh";
+          };
         in
         [
           (wrap "lefthook-bats-parse" nix-lefthook-bats-parse-src {
@@ -172,6 +186,24 @@
             runtimeInputs = [ pkgs.gnugrep ];
           })
           (wrap "lefthook-missing-final-newline" nix-lefthook-missing-final-newline-src { })
+          (wrap "lefthook-markdownlint" nix-lefthook-markdownlint-src {
+            runtimeInputs = [
+              pkgs.markdownlint-cli
+              isMarkdownAgentic
+            ];
+          })
+          (pkgs.writeShellApplication {
+            name = "lefthook-markdownlint-agentic";
+            runtimeInputs = [
+              pkgs.markdownlint-cli
+              isMarkdownAgentic
+            ];
+            text =
+              builtins.replaceStrings
+                [ "@MARKDOWNLINT_AGENTIC_CONFIG@" ]
+                [ "${nix-lefthook-markdownlint-agentic-src}/.markdownlint-agentic.yml" ]
+                (builtins.readFile "${nix-lefthook-markdownlint-agentic-src}/lefthook-markdownlint-agentic.sh");
+          })
           (pkgs.writeShellApplication {
             name = "lefthook-nix-no-embedded-shell";
             text = ''

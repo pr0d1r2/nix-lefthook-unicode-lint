@@ -2,7 +2,8 @@
 
 ## §D — Description
 
-Nix-flake-packaged lefthook-compatible Unicode lint checker that detects invalid UTF-8 byte sequences and U+FFFD replacement characters using 2-of-3 consensus (iconv, Python 3, Perl). Skips binary files. Targets Nix dev environments on Linux/macOS (amd64/arm64). Consumed as a lefthook remote or flake input.
+Nix-flake-packaged lefthook-compatible Unicode lint checker that detects invalid UTF-8 byte sequences and U+FFFD replacement characters using 2-of-3 consensus (iconv, Python 3, Perl).
+Skips binary files. Targets Nix dev environments on Linux/macOS (amd64/arm64). Consumed as a lefthook remote or flake input.
 
 ## §V — Invariants
 
@@ -49,3 +50,4 @@ Nix-flake-packaged lefthook-compatible Unicode lint checker that detects invalid
 1. **Silent false negatives**: If python3 and perl are both absent, only iconv votes; consensus threshold (2) can never be reached. The Nix wrapper guarantees deps, but raw script consumers may lack them.
 2. **grep -P portability**: PCRE mode requires GNU grep. Nix provides it, but raw script use on stock macOS fails.
 3. **Malformed migrated flake** (2026-07-22): Migration spliced a legacy `devShells` block into `extraPackages`, producing invalid Nix syntax. The fix removed the corrupted remnant and kept the package through the supported `extraPackages` extension point.
+4. **Guardrail coherence ran outside the dev shell** (2026-07-22): The reusable workflow launched `nix run .#confirm` without the fragment-provided lefthook executables on `PATH`. The repository workflow now runs confirmation through `nix develop` before executing the flake checks.

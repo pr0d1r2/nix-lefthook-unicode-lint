@@ -20,11 +20,6 @@
       set-and-setting,
       ...
     }:
-    let
-      forAllSystems =
-        f: nixpkgs.lib.genAttrs supportedSystems (system: f nixpkgs.legacyPackages.${system});
-          batsWithLibs = batsWithLibsFor pkgs;
-    in
     set-and-setting.lib.mkConsumerFlake {
       inherit self nixpkgs set-and-setting;
       fragments = [
@@ -36,42 +31,16 @@
         "yaml"
       ];
       extraPackages = pkgs: {
-          default = pkgs.writeShellApplication {
-            name = "lefthook-unicode-lint";
-            runtimeInputs = [
-              pkgs.gnugrep
-              pkgs.libiconv
-              pkgs.python3
-              pkgs.perl
-            ];
-            text = builtins.readFile ./lefthook-unicode-lint.sh;
-          };
-        devShells = forAllSystems (
-          pkgs:
-          let
-            inherit (pkgs.stdenv.hostPlatform) system;
-            batsWithLibs = batsWithLibsFor pkgs;
-          in
-          rec {
-            default = pkgs.mkShell {
-                self.packages.${system}.default
-                batsWithLibs
-                pkgs.coreutils
-                pkgs.git
-                pkgs.lefthook
-                pkgs.nix
-                pkgs.parallel
-                pkgs.statix
-                pkgs.taplo
-              ]
-              ++ (lefthookWrappersFor pkgs);
-              shellHook = builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsWithLibs}" ] (
-                builtins.readFile ./dev.sh
-              );
-            };
-            ci = default;
-          }
-        );
+        default = pkgs.writeShellApplication {
+          name = "lefthook-unicode-lint";
+          runtimeInputs = [
+            pkgs.gnugrep
+            pkgs.libiconv
+            pkgs.python3
+            pkgs.perl
+          ];
+          text = builtins.readFile ./lefthook-unicode-lint.sh;
+        };
       };
       src = ./.;
     };

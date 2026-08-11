@@ -10,6 +10,12 @@ setup() {
     assert_success
 }
 
+@test "pre-commit defines unicode-lint once" {
+    run bash -c "sed -n '/^pre-commit:/,/^pre-push:/p' lefthook.yml | grep -c '^    unicode-lint:'"
+    assert_success
+    assert_output "1"
+}
+
 @test "pre-push unicode-lint has binary exclude pattern" {
     run bash -c "sed -n '/^pre-push:/,\$p' lefthook.yml | sed -n '/^    unicode-lint:/,/^    markdownlint:/p' | grep 'exclude:'"
     assert_success

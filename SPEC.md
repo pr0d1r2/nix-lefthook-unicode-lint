@@ -51,3 +51,4 @@ Skips binary files. Targets Nix dev environments on Linux/macOS (amd64/arm64). C
 2. **grep -P portability**: PCRE mode requires GNU grep. Nix provides it, but raw script use on stock macOS fails.
 3. **Malformed migrated flake** (2026-07-22): Migration spliced a legacy `devShells` block into `extraPackages`, producing invalid Nix syntax. The fix removed the corrupted remnant and kept the package through the supported `extraPackages` extension point.
 4. **Guardrail coherence ran outside the dev shell** (2026-07-22): The reusable workflow launched `nix run .#confirm` without the fragment-provided lefthook executables on `PATH`. The repository workflow now runs confirmation through `nix develop` before executing the flake checks.
+5. **Duplicate nixpkgs lock nodes** (2026-08-11): `set-and-setting` resolved its own `nixpkgs-lock`, causing the lock-graph guardrail to fail. The flake now follows the repository's shared `nixpkgs-lock` input.

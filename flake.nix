@@ -42,6 +42,13 @@
           ];
           text = builtins.readFile ./lefthook-unicode-lint.sh;
         };
+        actionlint = pkgs.writeShellApplication {
+          name = "lefthook-actionlint";
+          runtimeInputs = [ pkgs.actionlint ];
+          text = ''
+            actionlint "$@"
+          '';
+        };
       };
       src = ./.;
     };

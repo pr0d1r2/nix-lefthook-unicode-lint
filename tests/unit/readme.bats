@@ -5,6 +5,18 @@ setup() {
     load "${BATS_LIB_PATH}/bats-assert/load.bash"
 }
 
+@test "README keeps the autonomous tending disclaimer markers" {
+    run grep -F '<!-- hallucinogen:autonomy-disclaimer start -->' README.md
+    assert_success
+    run grep -F '<!-- hallucinogen:autonomy-disclaimer end -->' README.md
+    assert_success
+}
+
+@test "README disclaimer links to the repository-specific document" {
+    run grep -F '> Read [LLM-DISCLAIMER](docs/LLM-DISCLAIMER.md)' README.md
+    assert_success
+}
+
 @test "README documents consensus algorithm" {
     run grep -F '2-of-3' README.md
     assert_success

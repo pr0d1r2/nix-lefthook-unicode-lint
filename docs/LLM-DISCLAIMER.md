@@ -54,8 +54,9 @@ missed.
 
 ## The guardrails are this repository's own
 
-This repository is gated by `lefthook.yml`. Before a machine-authored branch is
-pushed, it is run against that gate: the same checks a human gets on
+This repository is gated by its Lefthook configuration. Before a
+machine-authored branch is pushed, it is run against that gate: the same checks
+a human gets on
 `git commit`, in the same environment continuous integration uses. A change the
 gate refuses is not pushed and no pull request is opened for it.
 

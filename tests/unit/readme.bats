@@ -17,6 +17,11 @@ setup() {
     assert_success
 }
 
+@test "README disclaimer is one line inside its markers" {
+    run awk '/<!-- hallucinogen:autonomy-disclaimer start -->/{start=1; next} /<!-- hallucinogen:autonomy-disclaimer end -->/{end=1} start && !end {count++} END {exit !(count == 1)}' README.md
+    assert_success
+}
+
 @test "README documents consensus algorithm" {
     run grep -F '2-of-3' README.md
     assert_success

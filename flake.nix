@@ -30,6 +30,7 @@
         "ascii"
         "markdown"
         "yaml"
+        "toml"
       ];
       extraPackages = pkgs: {
         default = pkgs.writeShellApplication {

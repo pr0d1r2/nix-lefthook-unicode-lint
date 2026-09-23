@@ -54,3 +54,4 @@ Skips binary files. Targets Nix dev environments on Linux/macOS (amd64/arm64). C
 5. **Duplicate nixpkgs lock nodes** (2026-08-11): `set-and-setting` resolved its own `nixpkgs-lock`, causing the lock-graph guardrail to fail. The flake now follows the repository's shared `nixpkgs-lock` input.
 6. **Missing TOML lefthook fragment** (2026-09-22): The flake omitted the `toml` fragment, so generated `lefthook.yml` lacked the Taplo commands and failed the guardrail fidelity check. Added the fragment to the consumer flake.
 7. **Multi-line autonomy disclaimer** (2026-09-23): The README disclaimer occupied multiple lines between its markers, failing the repository's one-line disclaimer guardrail. Consolidated the disclaimer into one line.
+8. **Disclaimer remained physically wrapped** (2026-09-23): The prior consolidation still used three Markdown blockquote lines, so the README one-line guardrail continued to fail. Put the complete disclaimer on one physical line.

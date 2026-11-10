@@ -19,25 +19,31 @@ for f in "$@"; do
   fi
 
   votes=0
+  methods=0
 
-  if ! iconv -f UTF-8 -t UTF-8 "$f" >/dev/null 2>&1; then
-    votes=$((votes + 1))
+  if command -v iconv >/dev/null 2>&1; then
+    methods=$((methods + 1))
+    if ! iconv -f UTF-8 -t UTF-8 "$f" >/dev/null 2>&1; then
+      votes=$((votes + 1))
+    fi
   fi
 
   if command -v python3 >/dev/null 2>&1; then
+    methods=$((methods + 1))
     if ! python3 -c "import sys; open(sys.argv[1],'rb').read().decode('utf-8')" "$f" 2>/dev/null; then
       votes=$((votes + 1))
     fi
   fi
 
   if command -v perl >/dev/null 2>&1; then
+    methods=$((methods + 1))
     if ! perl -e 'use Encode; local $/; open my $fh, "<:raw", $ARGV[0] or die; my $d = <$fh>; decode("UTF-8", $d, Encode::FB_CROAK)' "$f" 2>/dev/null; then
       votes=$((votes + 1))
     fi
   fi
 
   if [ "$votes" -ge 2 ]; then
-    echo "unicode-lint: $f: contains invalid UTF-8 byte sequences ($votes/3 methods agree)" >&2
+    echo "unicode-lint: $f: contains invalid UTF-8 byte sequences ($votes/$methods methods agree)" >&2
     failed=1
     continue
   fi

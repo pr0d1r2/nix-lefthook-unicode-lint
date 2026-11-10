@@ -128,6 +128,17 @@ setup() {
     assert_output --partial "/3 methods agree"
 }
 
+@test "consensus vote format reflects missing methods" {
+    printf '\xff\xfe' > "$TMP/degraded.txt"
+    lint_path="$(command -v lefthook-unicode-lint)"
+    mkdir -p "$TMP/bin"
+    ln -s "$(command -v grep)" "$TMP/bin/grep"
+    ln -s "$(command -v iconv)" "$TMP/bin/iconv"
+    run env PATH="$TMP/bin" "$lint_path" "$TMP/degraded.txt"
+    assert_failure
+    assert_output --partial "2/2 methods agree"
+}
+
 @test "0x80 byte consensus" {
     printf '\x80\n' > "$TMP/c.txt"
     run lefthook-unicode-lint "$TMP/c.txt"

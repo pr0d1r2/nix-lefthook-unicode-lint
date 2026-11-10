@@ -1,118 +1,116 @@
 #!/usr/bin/env bats
 
 setup() {
-    load "${BATS_LIB_PATH}/bats-support/load.bash"
-    load "${BATS_LIB_PATH}/bats-assert/load.bash"
+  load "${BATS_LIB_PATH}/bats-support/load.bash"
+  load "${BATS_LIB_PATH}/bats-assert/load.bash"
 
     TMP="$BATS_TEST_TMPDIR"
 }
 
-@test "no args exits 0" {
+@test "no args" {
     run lefthook-unicode-lint
     assert_success
 }
 
-@test "non-existent file is skipped" {
+@test "missing file" {
     run lefthook-unicode-lint /nonexistent/file.txt
     assert_success
 }
 
-@test "clean ASCII file passes" {
+@test "ASCII passes" {
     echo "hello world" > "$TMP/clean.txt"
     run lefthook-unicode-lint "$TMP/clean.txt"
     assert_success
 }
 
-@test "clean UTF-8 file passes" {
+@test "UTF-8 passes" {
     printf 'héllo wörld\n' > "$TMP/utf8.txt"
     run lefthook-unicode-lint "$TMP/utf8.txt"
     assert_success
 }
 
-@test "file with U+FFFD replacement character fails" {
+@test "U+FFFD fails" {
     printf 'hello \xef\xbf\xbd world\n' > "$TMP/fffd.txt"
     run lefthook-unicode-lint "$TMP/fffd.txt"
     assert_failure
     assert_output --partial "U+FFFD"
 }
 
-@test "valid UTF-8 box-drawing characters pass" {
+@test "box drawing passes" {
     printf '┌──────┐\n│ test │\n└──────┘\n' > "$TMP/box.txt"
     run lefthook-unicode-lint "$TMP/box.txt"
     assert_success
 }
 
-@test "binary file is skipped" {
+@test "binary skipped" {
     printf 'hello\x00world' > "$TMP/binary.bin"
     run lefthook-unicode-lint "$TMP/binary.bin"
     assert_success
 }
 
-@test "large binary file is skipped" {
-    # Reproduce GNU grep 3.12 regression: grep -Plq '\x00' silently
-    # misses null bytes in larger binary files unless -a is used.
+@test "large binary skipped" {
     dd if=/dev/urandom of="$TMP/image.gif" bs=1024 count=100 2>/dev/null
     run lefthook-unicode-lint "$TMP/image.gif"
     assert_success
 }
 
-@test "filename with single quote passes" {
+@test "single quote filename" {
     echo "hello world" > "$TMP/it's_fine.txt"
     run lefthook-unicode-lint "$TMP/it's_fine.txt"
     assert_success
 }
 
-@test "filename with space passes" {
+@test "space filename" {
     echo "hello world" > "$TMP/file name.txt"
     run lefthook-unicode-lint "$TMP/file name.txt"
     assert_success
 }
 
-@test "filename with double quote passes" {
+@test "double quote filename" {
     echo "hello world" > "$TMP/file\"name.txt"
     run lefthook-unicode-lint "$TMP/file\"name.txt"
     assert_success
 }
 
-@test "filename with dollar sign passes" {
+@test "dollar filename" {
     echo "hello world" > "$TMP/file\$name.txt"
     run lefthook-unicode-lint "$TMP/file\$name.txt"
     assert_success
 }
 
-@test "filename with backtick passes" {
+@test "backtick filename" {
     echo "hello world" > "$TMP/file\`name.txt"
     run lefthook-unicode-lint "$TMP/file\`name.txt"
     assert_success
 }
 
-@test "filename with parentheses passes" {
+@test "parentheses filename" {
     echo "hello world" > "$TMP/file(name).txt"
     run lefthook-unicode-lint "$TMP/file(name).txt"
     assert_success
 }
 
-@test "filename with semicolons and ampersands passes" {
+@test "semicolon filename" {
     echo "hello world" > "$TMP/file;name&here.txt"
     run lefthook-unicode-lint "$TMP/file;name&here.txt"
     assert_success
 }
 
-@test "filename with special characters and invalid UTF-8 fails" {
+@test "special filename invalid UTF-8" {
     printf '\xff\xfe invalid' > "$TMP/it's a \$pecial file.txt"
     run lefthook-unicode-lint "$TMP/it's a \$pecial file.txt"
     assert_failure
     assert_output --partial "invalid UTF-8"
 }
 
-@test "filename with special characters and U+FFFD fails" {
+@test "special filename U+FFFD" {
     printf 'hello \xef\xbf\xbd world\n' > "$TMP/file\"with'special.txt"
     run lefthook-unicode-lint "$TMP/file\"with'special.txt"
     assert_failure
     assert_output --partial "U+FFFD"
 }
 
-@test "invalid UTF-8 detected by consensus" {
+@test "invalid UTF-8 consensus" {
     printf '\xff\xfe invalid' > "$TMP/bad_utf8.txt"
     run lefthook-unicode-lint "$TMP/bad_utf8.txt"
     assert_failure
@@ -128,7 +126,7 @@ setup() {
     assert_output --partial "/3 methods agree"
 }
 
-@test "consensus vote format reflects missing methods" {
+@test "consensus reflects missing methods" {
     printf '\xff\xfe' > "$TMP/degraded.txt"
     lint_path="$(command -v lefthook-unicode-lint)"
     mkdir -p "$TMP/bin"
@@ -139,52 +137,52 @@ setup() {
     assert_output --partial "2/2 methods agree"
 }
 
-@test "0x80 byte consensus" {
+@test "0x80 consensus" {
     printf '\x80\n' > "$TMP/c.txt"
     run lefthook-unicode-lint "$TMP/c.txt"
     assert_failure
     assert_output --partial "/3 methods agree"
 }
 
-@test "empty file passes" {
+@test "empty passes" {
     touch "$TMP/empty.txt"
     run lefthook-unicode-lint "$TMP/empty.txt"
     assert_success
 }
 
-@test "multiple files: one bad fails the run" {
+@test "one bad file fails" {
     echo "clean" > "$TMP/good.txt"
     printf 'hello \xef\xbf\xbd world\n' > "$TMP/bad.txt"
     run lefthook-unicode-lint "$TMP/good.txt" "$TMP/bad.txt"
     assert_failure
 }
 
-@test "CJK characters pass" {
+@test "CJK passes" {
     printf '%s\n' '漢字テスト한국어' > "$TMP/cjk.txt"
     run lefthook-unicode-lint "$TMP/cjk.txt"
     assert_success
 }
 
-@test "emoji characters pass" {
+@test "emoji passes" {
     printf '%s\n' '🎉🚀💯🌍' > "$TMP/emoji.txt"
     run lefthook-unicode-lint "$TMP/emoji.txt"
     assert_success
 }
 
-@test "mixed CJK and emoji with ASCII passes" {
+@test "mixed Unicode passes" {
     printf '%s\n' 'Hello 世界 🚀 東京' > "$TMP/mix.txt"
     run lefthook-unicode-lint "$TMP/mix.txt"
     assert_success
 }
 
-@test "CJK with U+FFFD fails" {
+@test "CJK U+FFFD fails" {
     printf '漢字\xef\xbf\xbd测试\n' > "$TMP/cf.txt"
     run lefthook-unicode-lint "$TMP/cf.txt"
     assert_failure
     assert_output --partial "U+FFFD"
 }
 
-@test "emoji with invalid UTF-8 fails" {
+@test "emoji invalid UTF-8" {
     printf '🎉\xff\xfe🚀\n' > "$TMP/eb.txt"
     run lefthook-unicode-lint "$TMP/eb.txt"
     assert_failure

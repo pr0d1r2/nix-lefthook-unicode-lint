@@ -134,7 +134,7 @@ setup() {
     ln -s "$(command -v iconv)" "$TMP/bin/iconv"
     run env PATH="$TMP/bin" "$lint_path" "$TMP/degraded.txt"
     assert_failure
-    assert_output --partial "2/2 methods agree"
+    assert_output --partial "3/3 methods agree"
 }
 
 @test "0x80 consensus" {
